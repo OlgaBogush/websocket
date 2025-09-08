@@ -18,6 +18,19 @@ const io = new Server(server, {
   },
 })
 
+io.on("connection", (socket) => {
+  socket.on("join", ({name, room}) => {
+    socket.join(room)
+    socket.emit("message", {
+      data: {user: {name: "Admin"}, message: `Hey, my love ${name}`}
+    })
+  })
+
+  io.on("disconnect", () => {
+    console.log("Disconnect")
+  })
+})
+
 server.listen(4000, () => {
   console.log("Server is running")
 })

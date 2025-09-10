@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react"
 import { useLocation } from "react-router-dom"
 import io from "socket.io-client"
+import EmojiPicker from "emoji-picker-react"
+
+import icon from "../images/emoji.svg"
+import styles from "../styles/Chat.module.css"
 
 const socket = io.connect("http://localhost:4000")
 
 const Chat = () => {
   const { search } = useLocation()
-  const [params, setParams] = useState(null)
+  const [params, setParams] = useState({ room: "", user: "" })
   const [state, setState] = useState([])
+  const [message, setMessage] = useState("")
+  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     const searchParams = Object.fromEntries(new URLSearchParams(search))
@@ -17,11 +23,57 @@ const Chat = () => {
 
   useEffect(() => {
     socket.on("message", ({ data }) => {
-      setState((_state) => ([..._state, data]))
+      setState((_state) => [..._state, data])
     })
   }, [])
 
-  return <div>Chat</div>
+  const leftRoom = () => {}
+  const handleChange = ({ target: { value } }) => setMessage(value)
+  const onEmojiClick = ({ emoji }) => setMessage(`${message} ${emoji}`)
+  const handleSubmit = () => {}
+
+  return (
+    <div className={styles.wrap}>
+      <div className={styles.header}>
+        <div className={styles.title}>{params.room}</div>
+        <div className={styles.users}>0 users in this room</div>
+        <button className={styles.left} onClick={leftRoom}>
+          Left the room
+        </button>
+      </div>
+      <div className={styles.messages}>
+        {state.map(({ message }, i) => (
+          <span key={i}>{message}</span>
+        ))}
+      </div>
+      <form className={styles.form}>
+        <div className={styles.input}>
+          <input
+            type="text"
+            name="message"
+            value={message}
+            placeholder="What do you want to write?"
+            onChange={handleChange}
+            autoComplete="off"
+            required
+          />
+        </div>
+
+        <div className={styles.emoji}>
+          <img src={icon} alt="emoji" onClick={() => setIsOpen(!isOpen)} />
+          {isOpen && (
+            <div className={styles.emojies}>
+              <EmojiPicker onEmojiClick={onEmojiClick} />
+            </div>
+          )}
+        </div>
+
+        <div className={styles.button}>
+          <input type="submit" value="Send a message" onSubmit={handleSubmit} />
+        </div>
+      </form>
+    </div>
+  )
 }
 
 export default Chat

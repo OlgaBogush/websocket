@@ -6,11 +6,13 @@ import EmojiPicker from "emoji-picker-react"
 import icon from "../images/emoji.svg"
 import styles from "../styles/Chat.module.css"
 
+import Messages from "./Messages"
+
 const socket = io.connect("http://localhost:4000")
 
 const Chat = () => {
   const { search } = useLocation()
-  const [params, setParams] = useState({ room: "", user: "" })
+  const [params, setParams] = useState({ room: "", name: "" })
   const [state, setState] = useState([])
   const [message, setMessage] = useState("")
   const [isOpen, setIsOpen] = useState(false)
@@ -41,11 +43,11 @@ const Chat = () => {
           Left the room
         </button>
       </div>
+
       <div className={styles.messages}>
-        {state.map(({ message }, i) => (
-          <span key={i}>{message}</span>
-        ))}
+        <Messages messages={state} name={params.name} />
       </div>
+
       <form className={styles.form}>
         <div className={styles.input}>
           <input

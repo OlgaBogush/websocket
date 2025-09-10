@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import React, { useEffect, useState } from "react"
+import { useLocation } from "react-router-dom"
 import io from "socket.io-client"
 
 const socket = io.connect("http://localhost:4000")
@@ -7,6 +7,7 @@ const socket = io.connect("http://localhost:4000")
 const Chat = () => {
   const { search } = useLocation()
   const [params, setParams] = useState(null)
+  const [state, setState] = useState([])
 
   useEffect(() => {
     const searchParams = Object.fromEntries(new URLSearchParams(search))
@@ -15,16 +16,12 @@ const Chat = () => {
   }, [search])
 
   useEffect(() => {
-    socket.on("message", ({data}) => {
-      console.log(data);
+    socket.on("message", ({ data }) => {
+      setState((_state) => ([..._state, data]))
     })
   }, [])
 
-  return (
-    <div>
-      Chat
-    </div>
-  )
+  return <div>Chat</div>
 }
 
 export default Chat

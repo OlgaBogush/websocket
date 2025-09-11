@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import io from "socket.io-client"
 import EmojiPicker from "emoji-picker-react"
 
@@ -12,6 +12,7 @@ const socket = io.connect("http://localhost:4000")
 
 const Chat = () => {
   const { search } = useLocation()
+  const navigate = useNavigate()
   const [params, setParams] = useState({ room: "", name: "" })
   const [state, setState] = useState([])
   const [message, setMessage] = useState("")
@@ -31,12 +32,15 @@ const Chat = () => {
   }, [])
 
   useEffect(() => {
-    socket.on("joinRoom", ({ data: { users } }) => {
+    socket.on("countUsersRoom", ({ data: { users } }) => {
       setUsers(users.length)
     })
   }, [])
 
-  const leftRoom = () => {}
+  const leftRoom = () => {
+    socket.emit("leftRoom", { params })
+    navigate("/")
+  }
   const handleChange = ({ target: { value } }) => setMessage(value)
   const onEmojiClick = ({ emoji }) => setMessage(`${message} ${emoji}`)
   const handleSubmit = (e) => {

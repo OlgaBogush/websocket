@@ -5,7 +5,7 @@ const cors = require("cors")
 const app = express()
 
 const route = require("./route")
-const { addUser, findUser, getRoomUsers } = require("./users")
+const { addUser, findUser, getRoomUsers, removeUser } = require("./users")
 
 app.use(cors({ origin: "*" }))
 app.use(route)
@@ -33,7 +33,7 @@ io.on("connection", (socket) => {
     socket.broadcast.to(user.room).emit("message", {
       data: { user: { name: "Admin" }, message: `${user.name} has joined` },
     })
-    io.to(user.room).emit("joinRoom", {
+    io.to(user.room).emit("countUsersRoom", {
       data: {
         users: getRoomUsers(user.room),
       },
@@ -45,6 +45,22 @@ io.on("connection", (socket) => {
     const user = findUser(params)
     if (user) {
       io.to(user.room).emit("message", { data: { user, message } })
+    }
+  })
+
+  // слушаем событие leftRoom и выполняем соотв. манипуляции
+  socket.on("leftRoom", ({ params }) => {
+    const user = removeUser(params)
+    if (user) {
+      const { room, name } = params
+      io.to(room).emit("message", {
+        data: { user: { name: "Admin" }, message: `${name} has left` },
+      })
+      io.to(room).emit("countUsersRoom", {
+        data: {
+          users: getRoomUsers(room),
+        },
+      })
     }
   })
 

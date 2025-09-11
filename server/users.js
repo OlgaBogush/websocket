@@ -1,14 +1,19 @@
 let users = []
 
-const addUser = (user) => {
+const findUser = (user) => {
   const userName = user.name.trim().toLowerCase()
   const userRoom = user.room.trim().toLowerCase()
 
-  const isExist = users.find(
+  return users.find(
     (item) =>
       item.name.trim().toLowerCase() === userName &&
       item.room.trim().toLowerCase() === userRoom
   )
+}
+
+const addUser = (user) => {
+  const isExist = findUser(user)
+
   !isExist && users.push(user)
 
   const currentUser = isExist || user
@@ -18,4 +23,8 @@ const addUser = (user) => {
   }
 }
 
-module.exports = { addUser }
+const getRoomUsers = (room) => {
+  return users.filter((item) => item.room === room)
+}
+
+module.exports = { addUser, findUser, getRoomUsers }

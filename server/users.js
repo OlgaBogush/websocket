@@ -17,6 +17,7 @@ const addUser = (user) => {
   !isExist && users.push(user)
 
   const currentUser = isExist || user
+
   return {
     isExist: !!isExist,
     user: currentUser,
@@ -30,9 +31,10 @@ const getRoomUsers = (room) => {
 const removeUser = (user) => {
   const found = findUser(user)
   if (found) {
-    users = users.filter(
-      (item) => item.room === found.room && item.name !== found.name
+    const index = users.findIndex(
+      ({ room, name }) => room === found.room && name === found.name
     )
+    users.splice(index, 1)
   }
   return found
 }

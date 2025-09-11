@@ -20,7 +20,6 @@ const io = new Server(server, {
 })
 
 
-
 io.on("connection", (socket) => {
   // слушаем событие join и выполняем соотв. манипуляции
   socket.on("join", ({ name, room }) => {
@@ -68,7 +67,6 @@ io.on("connection", (socket) => {
     console.log("Disconnect")
   })
 })
-
 
 
 server.listen(4000, () => {
